@@ -14,6 +14,8 @@
 </head>
 <body>
 
+<div class="page">
+
   <!-- ════════════════════════════════
        HERO — foto com overlay escuro
   ═══════════════════════════════════ -->
@@ -21,6 +23,9 @@
     <img src="gabrielcruz.png" alt="Gabriel Cruz" class="hero__photo">
     <div class="hero__gradient"></div>
     <div class="hero__noise" aria-hidden="true"></div>
+    <div class="hero__overlay">
+      <p class="hero__tag">Mentoria Comercial para Corretores de Imóveis</p>
+    </div>
   </section>
 
   <!-- ════════════════════════════════
@@ -73,22 +78,21 @@
     <div class="cal-widget">
       <div class="cal-top">
         <div class="cal-top__left">
-          <p class="cal-top__eyebrow">Disponibilidade</p>
+          <p class="cal-top__eyebrow">Disponibilidade · Próximos 3 meses</p>
           <p class="cal-top__month" id="calMonthTitle"></p>
         </div>
         <div class="cal-top__nav">
-          <button aria-label="Mês anterior"><i class="fas fa-chevron-left"></i></button>
-          <button aria-label="Próximo mês"><i class="fas fa-chevron-right"></i></button>
+          <button id="calPrev" aria-label="Mês anterior"><i class="fas fa-chevron-left"></i></button>
+          <button id="calNext" aria-label="Próximo mês"><i class="fas fa-chevron-right"></i></button>
         </div>
       </div>
-      <div class="cal-grid">
-        <div class="cal-weekdays" id="calWeekdays"></div>
-        <div class="cal-days"    id="calDays"></div>
-      </div>
+      <div class="cal-weekdays" id="calWeekdays"></div>
+      <div class="cal-track" id="calTrack"></div>
+      <p class="cal-hint">Deslize para ver a disponibilidade dos próximos meses <i class="fas fa-arrow-right"></i></p>
       <div class="cal-legend">
         <div class="cal-legend__item">
           <div class="cal-legend__dot cal-legend__dot--disp"></div>
-          Disponível
+          Número = horários livres no dia
         </div>
         <div class="cal-legend__item">
           <div class="cal-legend__dot cal-legend__dot--lot"></div>
@@ -172,6 +176,9 @@
     <p>Feito com <span class="heart">♥</span> por <a href="#">GabrielCruzWeb</a></p>
   </footer>
 
+</div>
+<!-- /.page -->
+
   <!-- ════════════════════════════════
        QUIZ MODAL
   ═══════════════════════════════════ -->
@@ -242,71 +249,127 @@
       utm_source: new URLSearchParams(location.search).get('utm_source')
     });
 
-    // ── CALENDÁRIO ──────────────────────────────────────────────────────────────
-    // Mostra o próximo mês com pouquíssimos horários disponíveis → gera escassez
-    function buildCalendar() {
-      var today      = new Date();
-      var displayYear, displayMonth;
+    // ── CALENDÁRIO — visão de trimestre, só pra transmitir escassez ──────────────
+    // Não é um agendamento real: ninguém clica pra marcar nada aqui.
+    // Mês atual: bem cheio (poucos dias livres). Próximos 2 meses: quase tudo livre,
+    // pra parecer que a agenda enche rápido e quem vê precisa se mexer agora.
+    var monthNames = [
+      'Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+      'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'
+    ];
+    var wdLabels = ['D','S','T','Q','Q','S','S'];
 
-      // Se hoje for o último dia do mês, já mostramos o próximo
-      var lastOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-      if (today.getDate() >= lastOfMonth - 1) {
-        displayMonth = today.getMonth() + 1; // próximo mês (0-indexed: current+1)
-        displayYear  = today.getFullYear();
-        if (displayMonth > 11) { displayMonth = 0; displayYear++; }
-      } else {
-        displayMonth = today.getMonth();
-        displayYear  = today.getFullYear();
-      }
+    // Pseudo-aleatório determinístico por data — mesma data sempre gera o mesmo
+    // resultado (não fica mudando a cada reload, mas varia dia a dia).
+    function seededRandom(seed) {
+      var x = Math.sin(seed) * 43758.5453123;
+      return x - Math.floor(x);
+    }
 
-      // Apenas 2 vagas disponíveis — altere conforme necessário
-      var availableDays = [7, 21];
+    function buildMonthHtml(year, month, monthIdx, today) {
+      var daysInMonth = new Date(year, month + 1, 0).getDate();
+      var firstDay    = new Date(year, month, 1).getDay();
+      var isCurrentMonth = monthIdx === 0;
 
-      var monthNames = [
-        'Janeiro','Fevereiro','Março','Abril','Maio','Junho',
-        'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'
-      ];
-      var wdLabels = ['D','S','T','Q','Q','S','S'];
+      var html = '<div class="cal-month" data-month-idx="' + monthIdx + '">';
+      html += '<div class="cal-days">';
 
-      var firstDay    = new Date(displayYear, displayMonth, 1).getDay();
-      var daysInMonth = new Date(displayYear, displayMonth + 1, 0).getDate();
-
-      // Cabeçalho de mês
-      document.getElementById('calMonthTitle').textContent =
-        monthNames[displayMonth] + ' ' + displayYear;
-
-      // Dias da semana
-      document.getElementById('calWeekdays').innerHTML =
-        wdLabels.map(function(d) {
-          return '<div class="cal-wd">' + d + '</div>';
-        }).join('');
-
-      // Células dos dias
-      var html = '';
-
-      // Células vazias antes do dia 1
       for (var i = 0; i < firstDay; i++) {
         html += '<div class="cal-day cal-day--empty"></div>';
       }
 
       for (var d = 1; d <= daysInMonth; d++) {
-        var dow      = (firstDay + d - 1) % 7;         // 0=Dom, 6=Sáb
+        var dow      = (firstDay + d - 1) % 7; // 0=Dom, 6=Sáb
         var isWkend  = dow === 0 || dow === 6;
-        var isAvail  = availableDays.indexOf(d) !== -1;
-        var isPast   = (displayYear === today.getFullYear() &&
-                        displayMonth === today.getMonth() &&
-                        d < today.getDate());
+        var isToday  = isCurrentMonth && d === today.getDate();
+        var isPast   = isCurrentMonth && d < today.getDate();
+        var seed     = year * 372 + month * 31 + d;
+
+        var available = false;
+        var slots     = 0;
+
+        if (!isPast && !isWkend) {
+          if (isCurrentMonth) {
+            if (isToday) {
+              available = true;
+              slots = 1 + Math.floor(seededRandom(seed + 1) * 2); // 1-2
+            } else {
+              // só 2-4 dias soltos no mês ficam livres — agenda apertada
+              available = seededRandom(seed) < 0.14;
+              if (available) slots = 1 + Math.floor(seededRandom(seed + 1) * 2); // 1-2
+            }
+          } else {
+            // meses seguintes: quase tudo livre
+            available = seededRandom(seed) < 0.84;
+            if (available) slots = 1 + Math.floor(seededRandom(seed + 1) * 4); // 1-4
+          }
+        }
 
         var cls = 'cal-day';
-        if (isPast)         cls += ' cal-day--past';
-        else if (isWkend)   cls += ' cal-day--weekend';
-        else if (isAvail)   cls += ' cal-day--disponivel';
-        else                cls += ' cal-day--lotado';
+        if (isPast)            cls += ' cal-day--past';
+        else if (isWkend)      cls += ' cal-day--weekend';
+        else if (available)    cls += ' cal-day--disponivel';
+        else                   cls += ' cal-day--lotado';
+        if (isToday)           cls += ' cal-day--today';
 
-        html += '<div class="' + cls + '">' + d + '</div>';
+        var slotHtml = available ? '<span class="cal-day__slots">' + slots + '</span>' : '';
+        html += '<div class="' + cls + '">' + d + slotHtml + '</div>';
       }
 
-      document.getElementById('calDays').innerHTML = html;
+      html += '</div></div>';
+      return html;
+    }
+
+    var calMonths = []; // [{year, month}] dos 3 meses exibidos
+
+    function buildCalendar() {
+      var today = new Date();
+      calMonths = [];
+      for (var m = 0; m < 3; m++) {
+        var date = new Date(today.getFullYear(), today.getMonth() + m, 1);
+        calMonths.push({ year: date.getFullYear(), month: date.getMonth() });
+      }
+
+      document.getElementById('calWeekdays').innerHTML =
+        wdLabels.map(function(d) { return '<div class="cal-wd">' + d + '</div>'; }).join('');
+
+      var track = document.getElementById('calTrack');
+      track.innerHTML = calMonths.map(function(mInfo, idx) {
+        return buildMonthHtml(mInfo.year, mInfo.month, idx, today);
+      }).join('');
+
+      updateCalMonthTitle(0);
+
+      track.addEventListener('scroll', function() {
+        var idx = Math.round(track.scrollLeft / track.clientWidth);
+        updateCalMonthTitle(idx);
+      }, { passive: true });
+
+      document.getElementById('calPrev').addEventListener('click', function() {
+        scrollCalToMonth(currentCalIdx() - 1);
+      });
+      document.getElementById('calNext').addEventListener('click', function() {
+        scrollCalToMonth(currentCalIdx() + 1);
+      });
+    }
+
+    function currentCalIdx() {
+      var track = document.getElementById('calTrack');
+      return Math.round(track.scrollLeft / track.clientWidth);
+    }
+
+    function scrollCalToMonth(idx) {
+      idx = Math.max(0, Math.min(calMonths.length - 1, idx));
+      var track = document.getElementById('calTrack');
+      track.scrollTo({ left: idx * track.clientWidth, behavior: 'smooth' });
+      updateCalMonthTitle(idx);
+    }
+
+    function updateCalMonthTitle(idx) {
+      var m = calMonths[idx];
+      if (!m) return;
+      document.getElementById('calMonthTitle').textContent =
+        monthNames[m.month] + ' ' + m.year;
     }
 
     buildCalendar();
@@ -335,8 +398,10 @@
       }
     ];
 
-    var currentQ = 0;
-    var answers  = [];
+    var currentQ   = 0;
+    var answers    = [];
+    // 'not_started' | 'in_progress' | 'finished'
+    var quizState  = 'not_started';
 
     // Q1 qualifica se idx >= 2 (3 a 4 ou 5+)
     // Q2 qualifica se idx >= 1 (1-2 meses ou 3+ meses)
@@ -345,22 +410,35 @@
       return answers[0] >= 2 && answers[1] >= 1 && answers[3] !== 2;
     }
 
-    // ── QUIZ OPEN / CLOSE ────────────────────────────────────────────────────────
-    function openQuiz() {
-      track('quiz_open');
-      currentQ = 0;
-      answers  = [];
-      document.getElementById('chatArea').innerHTML    = '';
-      document.getElementById('optionsArea').innerHTML = '';
+    function startFreshQuiz() {
+      quizState = 'in_progress';
+      currentQ  = 0;
+      answers   = [];
+      document.getElementById('chatArea').innerHTML        = '';
+      document.getElementById('optionsArea').innerHTML     = '';
       document.getElementById('optionsArea').style.padding = '';
-      document.getElementById('quizOverlay').classList.add('active');
-      document.body.style.overflow = 'hidden';
 
       setTimeout(function() { addBotBubble('Olá! 👋 Sou o Gabriel Cruz.'); }, 300);
       setTimeout(function() {
         addBotBubble('Vou te fazer 5 perguntas rápidas pra entender seu momento e ver se faz sentido a gente conversar.');
       }, 1100);
       setTimeout(function() { showQuestion(0); }, 2100);
+    }
+
+    // ── QUIZ OPEN / CLOSE ────────────────────────────────────────────────────────
+    function openQuiz() {
+      track('quiz_open');
+      document.getElementById('quizOverlay').classList.add('active');
+      document.body.style.overflow = 'hidden';
+
+      // Só reinicia do zero se nunca começou, ou se já tinha terminado antes.
+      // Se a pessoa fechou no meio de uma resposta, reabrir continua de onde parou
+      // (o chat nem foi limpo, então o histórico de bolhas já está lá).
+      if (quizState === 'not_started' || quizState === 'finished') {
+        startFreshQuiz();
+      } else {
+        requestAnimationFrame(function() { requestAnimationFrame(scrollChat); });
+      }
     }
 
     function closeQuiz() {
@@ -416,6 +494,9 @@
         btn.addEventListener('click', function() { selectAnswer(i, opt); });
         area.appendChild(btn);
       });
+      // options area just changed height (flex layout) — rescroll chat
+      // on the next frame, once the new layout has settled
+      requestAnimationFrame(function() { requestAnimationFrame(scrollChat); });
     }
 
     function selectAnswer(idx, text) {
@@ -443,6 +524,7 @@
     }
 
     function finishQuiz() {
+      quizState = 'finished';
       var qualified    = isQualified();
       var answerLabels = questions.map(function(q, i) { return q.options[answers[i]]; });
 
@@ -460,18 +542,59 @@
           area.style.padding = '16px';
 
           var waUrl = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(buildWaMsg());
+
+          var countdown = document.createElement('p');
+          countdown.className = 'redirect-countdown';
+          area.appendChild(countdown);
+
           var a     = document.createElement('a');
           a.href    = waUrl;
           a.target  = '_blank';
           a.rel     = 'noopener noreferrer';
           a.className = 'whatsapp-btn';
           a.innerHTML = '<i class="fab fa-whatsapp"></i> Falar no WhatsApp';
+          var redirected = false;
           a.addEventListener('click', function() {
+            redirected = true;
             track('whatsapp_click_quiz', { answers: answerLabels });
           });
           area.appendChild(a);
+
+          // Auto-redirect em 5s — navega a própria aba (location.href), já que
+          // window.open() depois de um setTimeout costuma ser bloqueado como pop-up.
+          var secondsLeft = 5;
+          countdown.textContent = 'Te levando pro WhatsApp em ' + secondsLeft + 's...';
+          var redirectTimer = setInterval(function() {
+            secondsLeft--;
+            if (redirected) { clearInterval(redirectTimer); return; }
+            if (secondsLeft <= 0) {
+              clearInterval(redirectTimer);
+              countdown.textContent = 'Te levando pro WhatsApp agora...';
+              track('whatsapp_click_quiz', { answers: answerLabels, auto_redirect: true });
+              window.location.href = waUrl;
+            } else {
+              countdown.textContent = 'Te levando pro WhatsApp em ' + secondsLeft + 's...';
+            }
+          }, 1000);
+
+          requestAnimationFrame(function() { requestAnimationFrame(scrollChat); });
         } else {
-          addBotBubble('Pelo que você respondeu, ainda não é o momento certo pra gente conversar. Fica de olho no meu conteúdo, porque o cenário muda rápido.');
+          addBotBubble('Pelo que você me contou, hoje ainda não faz sentido eu te chamar pra uma conversa — seria perda de tempo pra nós dois, e prefiro ser direto com você do que te prometer algo fora do seu momento.');
+          setTimeout(function() {
+            addBotBubble('O cenário muda rápido. Continua de olho no meu conteúdo aqui embaixo: quando sua operação evoluir, você vai saber exatamente quando voltar.');
+
+            var area = document.getElementById('optionsArea');
+            area.style.padding = '16px';
+            var btn = document.createElement('button');
+            btn.className = 'option-btn option-btn--ghost';
+            btn.innerHTML = '<i class="fas fa-arrow-down"></i> Ver conteúdo e produtos';
+            btn.addEventListener('click', function() {
+              closeQuiz();
+              document.querySelector('.vitrine-wrap').scrollIntoView({ behavior: 'smooth' });
+            });
+            area.appendChild(btn);
+            requestAnimationFrame(function() { requestAnimationFrame(scrollChat); });
+          }, 900);
         }
       }, 1000);
     }
