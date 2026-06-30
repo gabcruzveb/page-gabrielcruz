@@ -24,7 +24,7 @@
     <div class="hero__gradient"></div>
     <div class="hero__noise" aria-hidden="true"></div>
     <div class="hero__overlay">
-      <p class="hero__tag">Mentoria Comercial para Corretores de Imóveis</p>
+      <p class="hero__tag">Marketing para Corretores</p>
     </div>
   </section>
 
@@ -249,10 +249,14 @@
       utm_source: new URLSearchParams(location.search).get('utm_source')
     });
 
-    // ── CALENDÁRIO — visão de trimestre, só pra transmitir escassez ──────────────
+    // ── CALENDÁRIO — janela rolante de 90 dias, só pra transmitir escassez ───────
     // Não é um agendamento real: ninguém clica pra marcar nada aqui.
-    // Mês atual: bem cheio (poucos dias livres). Próximos 2 meses: quase tudo livre,
-    // pra parecer que a agenda enche rápido e quem vê precisa se mexer agora.
+    // A escassez é calculada a partir de HOJE (não do mês do calendário), em 3 fases:
+    //   dias 1-15  → agenda bem cheia, só 2 dias soltos livres
+    //   dias 16-30 → já abre mais, 8 dias livres
+    //   dias 31-90 → quase tudo livre
+    // Como tudo parte de "new Date()" no carregamento, a janela desliza sozinha
+    // todo santo dia — não precisa atualizar nada manualmente.
     var monthNames = [
       'Janeiro','Fevereiro','Março','Abril','Maio','Junho',
       'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'
@@ -266,12 +270,63 @@
       return x - Math.floor(x);
     }
 
-    function buildMonthHtml(year, month, monthIdx, today) {
+    function dateSeed(d) {
+      return d.getFullYear() * 372 + d.getMonth() * 31 + d.getDate();
+    }
+
+    function dateKey(d) {
+      return d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
+    }
+
+    // Escolhe exatamente n datas de "candidates", de forma determinística
+    // (mesmo conjunto de entrada sempre gera a mesma escolha).
+    function seededPick(candidates, n, seedBase) {
+      var scored = candidates.map(function(d, i) {
+        return { d: d, score: seededRandom(seedBase + dateSeed(d) + i * 7919) };
+      });
+      scored.sort(function(a, b) { return a.score - b.score; });
+      return scored.slice(0, Math.max(0, Math.min(n, scored.length))).map(function(s) { return s.d; });
+    }
+
+    // Mapa { "ano-mes-dia": {available, slots} } cobrindo os próximos 90 dias
+    function buildAvailabilityMap(today) {
+      var map = {};
+      var seedBase = dateSeed(today);
+
+      map[dateKey(today)] = { available: true, slots: 1 + Math.floor(seededRandom(seedBase + 1) * 2) };
+
+      var phase1 = [], phase2 = [], phase3 = []; // dias úteis candidatos por fase
+      for (var offset = 1; offset <= 90; offset++) {
+        var d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + offset);
+        var dow = d.getDay();
+        if (dow === 0 || dow === 6) continue; // fim de semana não entra na disputa
+        if (offset <= 15)      phase1.push(d);
+        else if (offset <= 30) phase2.push(d);
+        else                   phase3.push(d);
+      }
+
+      var avail1 = seededPick(phase1, 2, seedBase + 1000);
+      var avail2 = seededPick(phase2, 8, seedBase + 2000);
+      var avail3 = seededPick(phase3, Math.round(phase3.length * 0.85), seedBase + 3000);
+
+      function applyAvail(list, slotMax) {
+        list.forEach(function(d) {
+          var seed = dateSeed(d);
+          map[dateKey(d)] = { available: true, slots: 1 + Math.floor(seededRandom(seed + 1) * slotMax) };
+        });
+      }
+      applyAvail(avail1, 2);
+      applyAvail(avail2, 3);
+      applyAvail(avail3, 4);
+
+      return map;
+    }
+
+    function buildMonthHtml(year, month, todayMid, availMap) {
       var daysInMonth = new Date(year, month + 1, 0).getDate();
       var firstDay    = new Date(year, month, 1).getDay();
-      var isCurrentMonth = monthIdx === 0;
 
-      var html = '<div class="cal-month" data-month-idx="' + monthIdx + '">';
+      var html = '<div class="cal-month">';
       html += '<div class="cal-days">';
 
       for (var i = 0; i < firstDay; i++) {
@@ -279,38 +334,32 @@
       }
 
       for (var d = 1; d <= daysInMonth; d++) {
-        var dow      = (firstDay + d - 1) % 7; // 0=Dom, 6=Sáb
+        var dateObj  = new Date(year, month, d);
+        var dow      = dateObj.getDay();
         var isWkend  = dow === 0 || dow === 6;
-        var isToday  = isCurrentMonth && d === today.getDate();
-        var isPast   = isCurrentMonth && d < today.getDate();
-        var seed     = year * 372 + month * 31 + d;
+        var isToday  = dateObj.getTime() === todayMid.getTime();
+        var isPast   = dateObj.getTime() < todayMid.getTime();
+        var entry    = availMap[dateKey(dateObj)];
 
-        var available = false;
-        var slots     = 0;
-
-        if (!isPast && !isWkend) {
-          if (isCurrentMonth) {
-            if (isToday) {
-              available = true;
-              slots = 1 + Math.floor(seededRandom(seed + 1) * 2); // 1-2
-            } else {
-              // só 2-4 dias soltos no mês ficam livres — agenda apertada
-              available = seededRandom(seed) < 0.14;
-              if (available) slots = 1 + Math.floor(seededRandom(seed + 1) * 2); // 1-2
-            }
-          } else {
-            // meses seguintes: quase tudo livre
-            available = seededRandom(seed) < 0.84;
-            if (available) slots = 1 + Math.floor(seededRandom(seed + 1) * 4); // 1-4
-          }
-        }
-
+        var available = false, slots = 0;
         var cls = 'cal-day';
-        if (isPast)            cls += ' cal-day--past';
-        else if (isWkend)      cls += ' cal-day--weekend';
-        else if (available)    cls += ' cal-day--disponivel';
-        else                   cls += ' cal-day--lotado';
-        if (isToday)           cls += ' cal-day--today';
+
+        if (isPast) {
+          cls += ' cal-day--past';
+        } else if (isToday) {
+          available = true;
+          slots = entry ? entry.slots : 1;
+          cls += ' cal-day--disponivel';
+        } else if (isWkend) {
+          cls += ' cal-day--weekend';
+        } else if (entry && entry.available) {
+          available = true;
+          slots = entry.slots;
+          cls += ' cal-day--disponivel';
+        } else {
+          cls += ' cal-day--lotado';
+        }
+        if (isToday) cls += ' cal-day--today';
 
         var slotHtml = available ? '<span class="cal-day__slots">' + slots + '</span>' : '';
         html += '<div class="' + cls + '">' + d + slotHtml + '</div>';
@@ -323,7 +372,10 @@
     var calMonths = []; // [{year, month}] dos 3 meses exibidos
 
     function buildCalendar() {
-      var today = new Date();
+      var today    = new Date();
+      var todayMid = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      var availMap = buildAvailabilityMap(todayMid);
+
       calMonths = [];
       for (var m = 0; m < 3; m++) {
         var date = new Date(today.getFullYear(), today.getMonth() + m, 1);
@@ -334,8 +386,8 @@
         wdLabels.map(function(d) { return '<div class="cal-wd">' + d + '</div>'; }).join('');
 
       var track = document.getElementById('calTrack');
-      track.innerHTML = calMonths.map(function(mInfo, idx) {
-        return buildMonthHtml(mInfo.year, mInfo.month, idx, today);
+      track.innerHTML = calMonths.map(function(mInfo) {
+        return buildMonthHtml(mInfo.year, mInfo.month, todayMid, availMap);
       }).join('');
 
       updateCalMonthTitle(0);
