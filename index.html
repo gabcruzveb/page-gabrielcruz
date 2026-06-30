@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <link rel="stylesheet" href="style.css">
+  <title>Gabriel Cruz — Corretor</title>
+</head>
+<body>
+
+  <!-- ════════════════════════════════
+       HERO — foto com overlay escuro
+  ═══════════════════════════════════ -->
+  <section class="hero">
+    <img src="gabrielcruz.png" alt="Gabriel Cruz" class="hero__photo">
+    <div class="hero__gradient"></div>
+    <div class="hero__noise" aria-hidden="true"></div>
+  </section>
+
+  <!-- ════════════════════════════════
+       IDENTITY — logo, bio, social
+  ═══════════════════════════════════ -->
+  <section class="identity">
+    <!-- Logo branca (3).png — visível sobre o fundo escuro -->
+    <img
+      src="Logo moderno dentista preto e amarelo (3).png"
+      alt="Gabriel Cruz"
+      class="identity__logo"
+    >
+    <p class="identity__subtitle">
+      Responda 5 perguntas e descubra o melhor caminho pra vender mais imóveis com previsibilidade comigo ↓
+    </p>
+    <p class="identity__bio">
+      Corretor que já vende mas vive de mês bom e mês ruim não precisa de mais esforço. Precisa de estrutura comercial.
+    </p>
+    <nav class="social-pills" aria-label="Redes sociais">
+      <a href="https://www.instagram.com/ogabrielcruzbr/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" data-platform="instagram"><i class="fab fa-instagram"></i></a>
+      <a href="https://www.tiktok.com/@gabrielcruzmkt"   target="_blank" rel="noopener noreferrer" aria-label="TikTok"    data-platform="tiktok"><i class="fab fa-tiktok"></i></a>
+      <a href="https://www.linkedin.com/in/gabriel-freitas-34054b314/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"  data-platform="linkedin"><i class="fab fa-linkedin-in"></i></a>
+    </nav>
+  </section>
+
+  <!-- ════════════════════════════════
+       QUIZ — card de entrada
+  ═══════════════════════════════════ -->
+  <section class="quiz-wrap">
+    <div class="quiz-trigger" id="quizTrigger" role="button" tabindex="0">
+      <div class="quiz-trigger__icon"><i class="fas fa-comments"></i></div>
+      <p class="quiz-trigger__title">
+        Se seu resultado depende de imobiliária, de lead que sobrou ou de sorte, você não tem operação. Tem improviso.
+      </p>
+      <p class="quiz-trigger__sub">
+        5 perguntas rápidas pra eu entender seu momento e te dizer se faz sentido a gente conversar.
+      </p>
+      <div class="quiz-trigger__btn">
+        Responder agora <i class="fas fa-arrow-right"></i>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════
+       CALENDÁRIO — escassez de agenda
+  ═══════════════════════════════════ -->
+  <section class="calendar-wrap">
+    <div class="scarcity-badge">Agenda quase lotada</div>
+    <p class="section-label">Reuniões Estratégicas 1:1</p>
+    <div class="cal-widget">
+      <div class="cal-top">
+        <div class="cal-top__left">
+          <p class="cal-top__eyebrow">Disponibilidade</p>
+          <p class="cal-top__month" id="calMonthTitle"></p>
+        </div>
+        <div class="cal-top__nav">
+          <button aria-label="Mês anterior"><i class="fas fa-chevron-left"></i></button>
+          <button aria-label="Próximo mês"><i class="fas fa-chevron-right"></i></button>
+        </div>
+      </div>
+      <div class="cal-grid">
+        <div class="cal-weekdays" id="calWeekdays"></div>
+        <div class="cal-days"    id="calDays"></div>
+      </div>
+      <div class="cal-legend">
+        <div class="cal-legend__item">
+          <div class="cal-legend__dot cal-legend__dot--disp"></div>
+          Disponível
+        </div>
+        <div class="cal-legend__item">
+          <div class="cal-legend__dot cal-legend__dot--lot"></div>
+          Lotado
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════
+       VITRINE — 3 produtos
+  ═══════════════════════════════════ -->
+  <section class="vitrine-wrap">
+    <p class="section-label">Como posso te ajudar</p>
+    <div class="vitrine-cards">
+
+      <div class="vcard vcard--prisma" data-product="prisma" role="button" tabindex="0">
+        <div class="vcard__icon"><i class="fas fa-layer-group"></i></div>
+        <div class="vcard__body">
+          <p class="vcard__tag">Sistema · 90 dias</p>
+          <p class="vcard__name">PRISMA</p>
+          <p class="vcard__desc">3 fontes de demanda rodando ao mesmo tempo</p>
+        </div>
+        <i class="fas fa-chevron-right vcard__arrow"></i>
+      </div>
+
+      <div class="vcard vcard--impulso" data-product="impulso" role="button" tabindex="0">
+        <div class="vcard__icon"><i class="fas fa-bolt"></i></div>
+        <div class="vcard__body">
+          <p class="vcard__tag">Programa · Pagamento único</p>
+          <p class="vcard__name">Operação Impulso</p>
+          <p class="vcard__desc">Reativação da base, primeiro resultado rápido</p>
+        </div>
+        <i class="fas fa-chevron-right vcard__arrow"></i>
+      </div>
+
+      <div class="vcard vcard--conteudo" data-product="conteudo365" role="button" tabindex="0">
+        <div class="vcard__icon"><i class="fas fa-calendar-days"></i></div>
+        <div class="vcard__body">
+          <p class="vcard__tag">Material · Digital</p>
+          <p class="vcard__name">365 Dias de Conteúdo</p>
+          <p class="vcard__desc">Uma ideia de conteúdo pra cada dia do ano</p>
+        </div>
+        <i class="fas fa-chevron-right vcard__arrow"></i>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════
+       CONTEÚDO — links de redes sociais
+  ═══════════════════════════════════ -->
+  <section class="social-section">
+    <p class="section-label">Me acompanhe</p>
+    <div class="social-links">
+      <a href="https://www.instagram.com/ogabrielcruzbr/" target="_blank" rel="noopener noreferrer" class="social-link" data-platform="instagram">
+        <span class="social-link__icon"><i class="fab fa-instagram"></i></span>
+        <span class="social-link__label">Instagram</span>
+        <span class="social-link__handle">@ogabrielcruzbr</span>
+        <i class="fas fa-arrow-up-right-from-square social-link__arrow"></i>
+      </a>
+      <a href="https://www.tiktok.com/@gabrielcruzmkt" target="_blank" rel="noopener noreferrer" class="social-link" data-platform="tiktok">
+        <span class="social-link__icon"><i class="fab fa-tiktok"></i></span>
+        <span class="social-link__label">TikTok</span>
+        <span class="social-link__handle">@gabrielcruzmkt</span>
+        <i class="fas fa-arrow-up-right-from-square social-link__arrow"></i>
+      </a>
+      <a href="https://www.linkedin.com/in/gabriel-freitas-34054b314/" target="_blank" rel="noopener noreferrer" class="social-link" data-platform="linkedin">
+        <span class="social-link__icon"><i class="fab fa-linkedin-in"></i></span>
+        <span class="social-link__label">LinkedIn</span>
+        <span class="social-link__handle">Gabriel Cruz</span>
+        <i class="fas fa-arrow-up-right-from-square social-link__arrow"></i>
+      </a>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════ -->
+  <footer>
+    <p>Feito com <span class="heart">♥</span> por <a href="#">GabrielCruzWeb</a></p>
+  </footer>
+
+  <!-- ════════════════════════════════
+       QUIZ MODAL
+  ═══════════════════════════════════ -->
+  <div class="modal-overlay" id="quizOverlay" role="dialog" aria-modal="true" aria-label="Quiz de qualificação">
+    <div class="modal">
+      <div class="modal__header">
+        <img src="gabrielcruz.png" alt="Gabriel Cruz" class="modal__avatar">
+        <div class="modal__info">
+          <p class="modal__name">Gabriel Cruz</p>
+          <p class="modal__status">Online agora</p>
+        </div>
+        <button class="modal__close" id="quizClose" aria-label="Fechar quiz">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal__chat"    id="chatArea"></div>
+      <div class="modal__options" id="optionsArea"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       PRODUCT MODAL
+  ═══════════════════════════════════ -->
+  <div class="product-overlay" id="productOverlay" role="dialog" aria-modal="true">
+    <div class="product-modal">
+      <button class="product-modal__close" id="productClose" aria-label="Fechar">
+        <i class="fas fa-times"></i>
+      </button>
+      <p  class="product-modal__tag"      id="pmTag"></p>
+      <h2 class="product-modal__headline" id="pmHeadline"></h2>
+      <p  class="product-modal__summary"  id="pmSummary"></p>
+      <div class="product-modal__for-who">
+        <strong>Pra quem é</strong>
+        <span id="pmForWho"></span>
+      </div>
+      <a href="#" class="whatsapp-btn" id="pmCta" target="_blank" rel="noopener noreferrer">
+        <i class="fab fa-whatsapp"></i>
+        <span id="pmCtaText"></span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       SCRIPTS
+  ═══════════════════════════════════ -->
+  <script>
+    // ── CONFIG ──────────────────────────────────────────────────────────────────
+    // Substitua pelo número real (código do país + DDD + número, sem + ou espaços)
+    var WA_NUMBER = '5586995185182';
+    // Defina a URL do endpoint de analytics quando o backend existir; null = só console
+    var ANALYTICS_URL = null;
+
+    // ── ANALYTICS ───────────────────────────────────────────────────────────────
+    function track(event, props) {
+      var payload = { event: event, props: props || {}, ts: Date.now() };
+      console.log('[track]', payload);
+      if (ANALYTICS_URL) {
+        fetch(ANALYTICS_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }).catch(function() {});
+      }
+    }
+
+    track('page_view', {
+      referrer: document.referrer,
+      utm_source: new URLSearchParams(location.search).get('utm_source')
+    });
+
+    // ── CALENDÁRIO ──────────────────────────────────────────────────────────────
+    // Mostra o próximo mês com pouquíssimos horários disponíveis → gera escassez
+    function buildCalendar() {
+      var today      = new Date();
+      var displayYear, displayMonth;
+
+      // Se hoje for o último dia do mês, já mostramos o próximo
+      var lastOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+      if (today.getDate() >= lastOfMonth - 1) {
+        displayMonth = today.getMonth() + 1; // próximo mês (0-indexed: current+1)
+        displayYear  = today.getFullYear();
+        if (displayMonth > 11) { displayMonth = 0; displayYear++; }
+      } else {
+        displayMonth = today.getMonth();
+        displayYear  = today.getFullYear();
+      }
+
+      // Apenas 2 vagas disponíveis — altere conforme necessário
+      var availableDays = [7, 21];
+
+      var monthNames = [
+        'Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+        'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'
+      ];
+      var wdLabels = ['D','S','T','Q','Q','S','S'];
+
+      var firstDay    = new Date(displayYear, displayMonth, 1).getDay();
+      var daysInMonth = new Date(displayYear, displayMonth + 1, 0).getDate();
+
+      // Cabeçalho de mês
+      document.getElementById('calMonthTitle').textContent =
+        monthNames[displayMonth] + ' ' + displayYear;
+
+      // Dias da semana
+      document.getElementById('calWeekdays').innerHTML =
+        wdLabels.map(function(d) {
+          return '<div class="cal-wd">' + d + '</div>';
+        }).join('');
+
+      // Células dos dias
+      var html = '';
+
+      // Células vazias antes do dia 1
+      for (var i = 0; i < firstDay; i++) {
+        html += '<div class="cal-day cal-day--empty"></div>';
+      }
+
+      for (var d = 1; d <= daysInMonth; d++) {
+        var dow      = (firstDay + d - 1) % 7;         // 0=Dom, 6=Sáb
+        var isWkend  = dow === 0 || dow === 6;
+        var isAvail  = availableDays.indexOf(d) !== -1;
+        var isPast   = (displayYear === today.getFullYear() &&
+                        displayMonth === today.getMonth() &&
+                        d < today.getDate());
+
+        var cls = 'cal-day';
+        if (isPast)         cls += ' cal-day--past';
+        else if (isWkend)   cls += ' cal-day--weekend';
+        else if (isAvail)   cls += ' cal-day--disponivel';
+        else                cls += ' cal-day--lotado';
+
+        html += '<div class="' + cls + '">' + d + '</div>';
+      }
+
+      document.getElementById('calDays').innerHTML = html;
+    }
+
+    buildCalendar();
+
+    // ── QUIZ DATA ────────────────────────────────────────────────────────────────
+    var questions = [
+      {
+        text: 'Quantos imóveis você fecha, em média, por mês hoje?',
+        options: ['0 a 1', '2', '3 a 4', '5 ou mais']
+      },
+      {
+        text: 'Há quanto tempo esse número está parado nessa faixa?',
+        options: ['Menos de 1 mês', '1 a 2 meses', '3 meses ou mais']
+      },
+      {
+        text: 'Você já investe em anúncio pra captar cliente hoje?',
+        options: ['Sim, invisto regularmente', 'Já tentei, mas parei', 'Nunca investi']
+      },
+      {
+        text: 'Você toparia mudar como organiza seus contatos hoje (planilha, memória, WhatsApp solto)?',
+        options: ['Sim, sem problema', 'Talvez, depende do trabalho', 'Prefiro manter como está']
+      },
+      {
+        text: 'A decisão de investir em algo assim é só sua?',
+        options: ['Sim, decido sozinho(a)', 'Tenho que alinhar com sócio/gerente']
+      }
+    ];
+
+    var currentQ = 0;
+    var answers  = [];
+
+    // Q1 qualifica se idx >= 2 (3 a 4 ou 5+)
+    // Q2 qualifica se idx >= 1 (1-2 meses ou 3+ meses)
+    // Q4 desqualifica se idx === 2 (prefiro manter)
+    function isQualified() {
+      return answers[0] >= 2 && answers[1] >= 1 && answers[3] !== 2;
+    }
+
+    // ── QUIZ OPEN / CLOSE ────────────────────────────────────────────────────────
+    function openQuiz() {
+      track('quiz_open');
+      currentQ = 0;
+      answers  = [];
+      document.getElementById('chatArea').innerHTML    = '';
+      document.getElementById('optionsArea').innerHTML = '';
+      document.getElementById('optionsArea').style.padding = '';
+      document.getElementById('quizOverlay').classList.add('active');
+      document.body.style.overflow = 'hidden';
+
+      setTimeout(function() { addBotBubble('Olá! 👋 Sou o Gabriel Cruz.'); }, 300);
+      setTimeout(function() {
+        addBotBubble('Vou te fazer 5 perguntas rápidas pra entender seu momento e ver se faz sentido a gente conversar.');
+      }, 1100);
+      setTimeout(function() { showQuestion(0); }, 2100);
+    }
+
+    function closeQuiz() {
+      document.getElementById('quizOverlay').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // ── CHAT HELPERS ─────────────────────────────────────────────────────────────
+    function scrollChat() {
+      var c = document.getElementById('chatArea');
+      c.scrollTop = c.scrollHeight;
+    }
+
+    function addBotBubble(text) {
+      var b = document.createElement('div');
+      b.className   = 'bubble bubble--bot';
+      b.textContent = text;
+      document.getElementById('chatArea').appendChild(b);
+      scrollChat();
+    }
+
+    function addUserBubble(text) {
+      var b = document.createElement('div');
+      b.className   = 'bubble bubble--user';
+      b.textContent = text;
+      document.getElementById('chatArea').appendChild(b);
+      scrollChat();
+    }
+
+    function addTyping() {
+      var b = document.createElement('div');
+      b.className = 'bubble--typing';
+      b.id        = 'typingDots';
+      b.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+      document.getElementById('chatArea').appendChild(b);
+      scrollChat();
+    }
+
+    function removeTyping() {
+      var t = document.getElementById('typingDots');
+      if (t) t.remove();
+    }
+
+    function showQuestion(idx) {
+      var q    = questions[idx];
+      addBotBubble(q.text);
+      var area = document.getElementById('optionsArea');
+      area.innerHTML = '';
+      q.options.forEach(function(opt, i) {
+        var btn = document.createElement('button');
+        btn.className   = 'option-btn';
+        btn.textContent = opt;
+        btn.addEventListener('click', function() { selectAnswer(i, opt); });
+        area.appendChild(btn);
+      });
+    }
+
+    function selectAnswer(idx, text) {
+      document.getElementById('optionsArea').innerHTML = '';
+      addUserBubble(text);
+      answers[currentQ] = idx;
+      track('quiz_question_answered', { question_number: currentQ + 1, answer: text });
+      currentQ++;
+
+      if (currentQ < questions.length) {
+        addTyping();
+        setTimeout(function() { removeTyping(); showQuestion(currentQ); }, 800);
+      } else {
+        finishQuiz();
+      }
+    }
+
+    function buildWaMsg() {
+      return 'Vim do link da página. Respondi o quiz:\n'
+        + '- Vendas/mês: '         + questions[0].options[answers[0]] + '\n'
+        + '- Platô há: '           + questions[1].options[answers[1]] + '\n'
+        + '- Investe em anúncio: ' + questions[2].options[answers[2]] + '\n'
+        + '- Mudar organização: '  + questions[3].options[answers[3]] + '\n'
+        + '- Decide sozinho: '     + questions[4].options[answers[4]];
+    }
+
+    function finishQuiz() {
+      var qualified    = isQualified();
+      var answerLabels = questions.map(function(q, i) { return q.options[answers[i]]; });
+
+      track(qualified ? 'quiz_completed_qualified' : 'quiz_completed_unqualified',
+            { answers: answerLabels });
+
+      addTyping();
+      setTimeout(function() {
+        removeTyping();
+
+        if (qualified) {
+          addBotBubble('Pelo que você respondeu, faz sentido a gente conversar. Te chamo no WhatsApp pra entender melhor o seu funil.');
+
+          var area  = document.getElementById('optionsArea');
+          area.style.padding = '16px';
+
+          var waUrl = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(buildWaMsg());
+          var a     = document.createElement('a');
+          a.href    = waUrl;
+          a.target  = '_blank';
+          a.rel     = 'noopener noreferrer';
+          a.className = 'whatsapp-btn';
+          a.innerHTML = '<i class="fab fa-whatsapp"></i> Falar no WhatsApp';
+          a.addEventListener('click', function() {
+            track('whatsapp_click_quiz', { answers: answerLabels });
+          });
+          area.appendChild(a);
+        } else {
+          addBotBubble('Pelo que você respondeu, ainda não é o momento certo pra gente conversar. Fica de olho no meu conteúdo, porque o cenário muda rápido.');
+        }
+      }, 1000);
+    }
+
+    // Quiz listeners
+    document.getElementById('quizTrigger').addEventListener('click', openQuiz);
+    document.getElementById('quizTrigger').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') openQuiz();
+    });
+    document.getElementById('quizClose').addEventListener('click', closeQuiz);
+    document.getElementById('quizOverlay').addEventListener('click', function(e) {
+      if (e.target === this) closeQuiz();
+    });
+
+    // ── PRODUCT DATA ─────────────────────────────────────────────────────────────
+    var products = {
+      prisma: {
+        tag:     'Sistema · 90 dias',
+        headline:'Você já provou que sabe vender. Agora prove que sabe escalar.',
+        summary: 'Sistema de 90 dias que monta 3 fontes de demanda rodando ao mesmo tempo — reativação de base, tráfego pago e presença orgânica. Você para de depender de uma fonte só.',
+        forWho:  'Corretor com 3 ou mais vendas por mês que bateu num teto e quer sair da operação de volume pra operação de valor.',
+        ctaText: 'Falar no WhatsApp sobre o PRISMA',
+        waMsg:   'Vim da vitrine da página, quero entender mais sobre o PRISMA.'
+      },
+      impulso: {
+        tag:     'Programa · Pagamento único',
+        headline:'Sua base tem cliente parado. A Impulso reativa sem você precisar de equipe.',
+        summary: 'Reativação da sua base de contatos e scripts de indicação, pagamento único. Pra quem tem carteira parada e quer o primeiro resultado rápido, sem montar a operação completa ainda.',
+        forWho:  'Corretor com base de 50 ou mais contatos, fluxo de caixa mais apertado, ainda não pronto pro sistema completo.',
+        ctaText: 'Falar no WhatsApp sobre a Impulso',
+        waMsg:   'Vim da vitrine da página, quero entender mais sobre a Operação Impulso.'
+      },
+      conteudo365: {
+        tag:     'Material · Digital',
+        headline:'Uma ideia de conteúdo pra cada dia do ano. Sem travar.',
+        summary: '365 ideias de conteúdo organizadas por formato e tipo de imóvel. Você para de abrir o Instagram sem saber o que vai postar.',
+        forWho:  'Corretor que sabe que precisa postar todo dia e trava na hora de decidir o quê.',
+        ctaText: 'Falar no WhatsApp sobre os 365 Dias',
+        waMsg:   'Vim da vitrine da página, quero saber mais sobre os 365 Dias de Conteúdo.'
+      }
+    };
+
+    // ── PRODUCT MODAL ────────────────────────────────────────────────────────────
+    function openProduct(id) {
+      var p = products[id];
+      track('vitrine_card_view', { card_id: id });
+
+      document.getElementById('pmTag').textContent      = p.tag;
+      document.getElementById('pmHeadline').textContent = p.headline;
+      document.getElementById('pmSummary').textContent  = p.summary;
+      document.getElementById('pmForWho').textContent   = p.forWho;
+
+      var cta    = document.getElementById('pmCta');
+      cta.href   = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(p.waMsg);
+      cta.onclick = function() { track('vitrine_cta_click', { card_id: id }); };
+      document.getElementById('pmCtaText').textContent = p.ctaText;
+
+      document.getElementById('productOverlay').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeProduct() {
+      document.getElementById('productOverlay').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.vcard').forEach(function(card) {
+      card.addEventListener('click', function() { openProduct(card.dataset.product); });
+      card.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') openProduct(card.dataset.product);
+      });
+    });
+
+    document.getElementById('productClose').addEventListener('click', closeProduct);
+    document.getElementById('productOverlay').addEventListener('click', function(e) {
+      if (e.target === this) closeProduct();
+    });
+
+    // ── SOCIAL ICON TRACKING ─────────────────────────────────────────────────────
+    document.querySelectorAll('.social-pills a').forEach(function(a) {
+      a.addEventListener('click', function() {
+        track('social_icon_click', { platform: a.dataset.platform });
+      });
+    });
+  </script>
+</body>
+</html>
